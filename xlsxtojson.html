@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html>
 
 <head>
@@ -8,45 +8,86 @@
 </head>
 
 <body>
-  <h1 style="font-size:80px; margin: 50px auto">Convert excel xlsx to json</h1>
-
+   <h1 style="font-size:80px; margin: 50px auto">Convert excel xlsx to json</h1>
+   <form>
+     <input type="file" id="xlsx_uploads" name="xlsx_uploads" accept=".xlsx" >
+     <button style="font-size: 30px;" onclick="convert()">Convert now</button>
+   </form>
    <div style="margin: 0 auto; text-align: center; ' id='admjson">
-     <h4 style="font-size:80px; margin-top: 100px">Converting, please wait</h4>
+   <h4 id="converting" style="display: none; font-size:80px; margin-top: 100px">Converting, please wait</h4>
    </div>
-   <script>
-        /* set up XMLHttpRequest */
-        var url = "https://bangive.github.io/blogger/Vn110319-tiny.xlsx";
-        var oReq = new XMLHttpRequest();
-        oReq.open("GET", url, true);
-        oReq.responseType = "arraybuffer";
-
-        oReq.onload = function(e) {
-            var arraybuffer = oReq.response;
-
-            /* convert data to binary string */
-            var data = new Uint8Array(arraybuffer);
-            var arr = new Array();
-            for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-            var bstr = arr.join("");
-
-            /* Call XLSX */
-            var workbook = XLSX.read(bstr, {
-                type: "binary"
-            });
-
-            /* DO SOMETHING WITH workbook HERE */
-            var first_sheet_name = workbook.SheetNames[0];
-            /* Get worksheet */
-            var worksheet = workbook.Sheets[first_sheet_name];
-            var admjson = XLSX.utils.sheet_to_json(worksheet, {
-                raw: true
-            });
-            document.getElementById('admjson').innerHTML = JSON.stringify(admjson);
+   <div id="preview"></div>
+    <script>
+      var input = document.querySelector('input');
+      var admJson = document.getElementById('admjson');
+      var preview = document.getElementById('preview');
+      var converting = document.getElementById('converting');
+      var data = '';
+      function updateFile() {     
+        while(preview.firstChild) {
+        preview.removeChild(preview.firstChild);
         }
+      var curFiles = input.files;
+      if(curFiles.length === 0) {
+      var para = document.createElement('p');
+      para.textContent = 'No files currently selected';
+      preview.appendChild(para);
+      } else {
+       var list = document.createElement('ol');
+       preview.appendChild(list);
+      for(var i = 0; i < curFiles.length; i++) {
+        var listItem = document.createElement('li');
+        var para = document.createElement('p');
+        if(validFileType(curFiles[i])) {
+          data = FileReader.readAsArrayBuffer(curFiles[i]);
+          para.textContent = 'File name ' + curFiles[i].name + ', file size ' + returnFileSize(curFiles[i].size) + '.';
+          var fileA = document.createElement('a');
+          var linkText = document.createTextNode("file link");  
+          fileA.appendChild(linkText);                
+          fileA.href = window.URL.createObjectURL(curFiles[i]);
+          
+          listItem.appendChild(fileA);
+          listItem.appendChild(para);
+      
+        } else {
+          para.textContent = 'File name ' + curFiles[i].name + ': Not a valid file type. Update your selection.';
+          listItem.appendChild(para);
+        }
+      
+        list.appendChild(listItem);
+      }
+      }
+      }
 
-        oReq.send();
+
+    input.style.opacity = 0;
+    input.addEventListener('change', updateFile);
+        
+    function convert() {
+        converting.style.display = 'block';
+        /* convert data to binary string */
+        var data1 = new Uint8Array(data);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");       
+        /* Call XLSX */
+        var workbook = XLSX.read(bstr, {
+        type: "binary"
+        });
+        
+        /* DO SOMETHING WITH workbook HERE */
+        var first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook.Sheets[first_sheet_name];
+        var admjson = XLSX.utils.sheet_to_json(worksheet, {
+        raw: true
+        });
+        admJson.innerHTML = JSON.stringify(admjson);
+   }
     </script>
 </body>
 
 </html>
+
+
 
