@@ -74,20 +74,18 @@
          var para = document.createElement('p');
         if(validFileType(file)) {
           convertBtn.disabled = false;
-          var fileReader = new FileReader();
-          fileReader.onload = function (e) {
-            var filename = file.name;
-            // pre-process data
-            var binary = "";
-            var bytes = new Uint8Array(e.target.result);
-            var length = bytes.byteLength;
-            for (var i = 0; i < length; i++) {
-              binary += String.fromCharCode(bytes[i]);
-            }
-            // call 'xlsx' to read the file
-            workbook = XLSX.read(binary, {type: 'binary'});
-          };
-          fileReader.readAsArrayBuffer(file);
+            var fileReader = new FileReader();
+          var data = new Uint8Array(arraybuffer);
+            var arr = new Array();
+            for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+            var bstr = arr.join("");
+
+            /* Call XLSX */
+           workbook = XLSX.read(bstr, {
+                type: "binary"
+            });
+
+          fileReader.readAsArrayBuffer(workbook);
           para.textContent = 'File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.';
           var fileA = document.createElement('a');
           var linkText = document.createTextNode("file link");  
