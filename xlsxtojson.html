@@ -30,10 +30,10 @@
       var preview = document.getElementById('preview');
       var converting = document.getElementById('converting');
       var data = '';
-      var fileTypes = [
-      '.xlsx'
-      ]
-      function returnFileSize(number) {
+      var fileTypes = ['xlsx'];
+
+
+     function returnFileSize(number) {
       if(number < 1024) {
       return number + 'bytes';
       } else if(number >= 1024 && number < 1048576) {
@@ -42,10 +42,15 @@
       return (number/1048576).toFixed(1) + 'MB';
       }
       }
-      function validFileType(file) {
+       function validFileType(file) {
       for(var i = 0; i < fileTypes.length; i++) {
       if(file.type === fileTypes[i]) {
       return true;
+      } else {
+        var para = document.createElement('p');
+        para.textContent = 'file type' + file.type ;
+        preview.appendChild(para);
+      
       }
       }
       
