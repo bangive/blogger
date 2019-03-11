@@ -59,15 +59,15 @@
         while(preview.firstChild) {
         preview.removeChild(preview.firstChild);
         }
-        var files = event.target.files,file;
-        if (!files || files.length == 0)  {
+         var file = input.files[0];
+        if (file.length == 0)  {
           var para = document.createElement('p');
           para.textContent = 'No files currently selected';
           preview.appendChild(para);
           convertBtn.disabled = true;
           converting.style.display = "none";
       } else {
-         file = files[0];       
+
          var list = document.createElement('ol');
          preview.appendChild(list);
          var listItem = document.createElement('li');
@@ -108,7 +108,7 @@
 
 
     
-    input.addEventListener('change', updateFile(event));
+    input.addEventListener('change', updateFile);
         
     function convert() {
         converting.style.display = 'block';        
