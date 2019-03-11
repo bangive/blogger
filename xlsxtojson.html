@@ -9,9 +9,9 @@
 
 <body>
    <h1 style="font-size:80px; margin: 50px auto">Convert excel xlsx to json</h1>
-   <form>
+   <form onsubmit="convert(); return false;">
      <input type="file" id="xlsx_uploads" name="xlsx_uploads" accept=".xlsx" >
-     <button style="font-size: 30px;" onclick="convert()">Convert now</button>
+     <input type="submit" value="Convert">
    </form>
    <div style="margin: 0 auto; text-align: center; ' id='admjson">
    <h4 id="converting" style="display: none; font-size:80px; margin-top: 100px">Converting, please wait</h4>
