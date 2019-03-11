@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html>
 
 <head>
@@ -14,7 +14,7 @@
 </head>
 
 <body>
-   <h1 style="font-size:80px; margin: 50px auto">Convert excel xlsx to json</h1>
+   <h1 style="font-size:80px; margin: 0 auto; padding: 50px 10px">Convert excel xlsx to json</h1>
 
      <input type="file" id="xlsx_uploads" name="xlsx_uploads" accept=".xlsx" >
      <button id="convert-btn" style="font-size: 30px; " disabled onclick="convert()">Convert now</button>
@@ -59,7 +59,7 @@
         while(preview.firstChild) {
         preview.removeChild(preview.firstChild);
         }
-         var file = input.files[0];
+        var file = input.files[0];
         if (file.length == 0)  {
           var para = document.createElement('p');
           para.textContent = 'No files currently selected';
@@ -67,25 +67,27 @@
           convertBtn.disabled = true;
           converting.style.display = "none";
       } else {
-
          var list = document.createElement('ol');
          preview.appendChild(list);
          var listItem = document.createElement('li');
          var para = document.createElement('p');
         if(validFileType(file)) {
           convertBtn.disabled = false;
-            var fileReader = new FileReader();
-          var data = new Uint8Array(arraybuffer);
-            var arr = new Array();
-            for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-            var bstr = arr.join("");
-
-            /* Call XLSX */
+          var fileReader = new FileReader();
+          fileReader.onload = function (e) {
+           /* convert data to binary string */
+           var data = new Uint8Array(e.target.result);
+           var arr = new Array();
+           for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+           var bstr = arr.join("");
+           
+           /* Call XLSX */
            workbook = XLSX.read(bstr, {
-                type: "binary"
-            });
-
-          fileReader.readAsArrayBuffer(workbook);
+           type: "binary"
+           });
+           
+          };
+          fileReader.readAsArrayBuffer(file);
           para.textContent = 'File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.';
           var fileA = document.createElement('a');
           var linkText = document.createTextNode("file link");  
@@ -123,4 +125,3 @@
 </body>
 
 </html>
-
