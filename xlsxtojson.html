@@ -68,13 +68,14 @@
           convertBtn.disabled = true;
           converting.style.display = "none";
       } else {
-       convertBtn.disabled = false;
+       
        var list = document.createElement('ol');
        preview.appendChild(list);
       for(var i = 0; i < curFiles.length; i++) {
         var listItem = document.createElement('li');
         var para = document.createElement('p');
         if(validFileType(curFiles[i])) {
+          convertBtn.disabled = false;
           data = FileReader.readAsArrayBuffer(curFiles[i]);
           para.textContent = 'File name ' + curFiles[i].name + ', file size ' + returnFileSize(curFiles[i].size) + '.';
           var fileA = document.createElement('a');
