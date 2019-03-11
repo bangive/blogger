@@ -1,4 +1,4 @@
- <!doctype html>
+<!doctype html>
 <html>
 
 <head>
@@ -29,7 +29,6 @@
       var convertBtn = document.getElementById('convert-btn');
       var preview = document.getElementById('preview');
       var converting = document.getElementById('converting');
-      var workbook = '';
       var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
       
       function returnFileSize(number) {
@@ -73,25 +72,6 @@
          var para = document.createElement('p');
         if(validFileType(file)) {
           convertBtn.disabled = false;
-          var fileReader = new FileReader();
-          fileReader.onload = function (e) {
-           var para = document.createElement('p');
-          para.textContent = 'file read as arraybuffer: ' + e.target.result;
-          preview.appendChild(para);
-           
-           /* convert data to binary string */
-           var data = new Uint8Array(e.target.result);
-           var arr = new Array();
-           for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-           var bstr = arr.join("");
-           
-           /* Call XLSX */
-           workbook = XLSX.read(bstr, {
-           type: "binary"
-           });
-           
-          };
-          fileReader.readAsArrayBuffer(file);
           para.textContent = 'File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.';
           var fileA = document.createElement('a');
           var linkText = document.createTextNode("file link");  
@@ -115,6 +95,29 @@
     input.addEventListener('change', updateFile, false);
         
     function convert() {
+        var file = input.files[0];
+        if (file.length == 0)  {        
+        convertBtn.disabled = true;
+        converting.style.display = "none";
+        } else {
+       
+        if(validFileType(file)) {
+        convertBtn.disabled = false;
+        var fileReader = new FileReader();
+        fileReader.onload = function (e) {
+        var para = document.createElement('p');
+        para.textContent = 'file read as arraybuffer: ' + e.target.result;
+        preview.appendChild(para);
+        /* convert data to binary string */
+        var data = new Uint8Array(e.target.result);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");
+        
+        /* Call XLSX */
+        var workbook = XLSX.read(bstr, {
+        type: "binary"
+        });
         converting.style.display = 'block';        
         /* DO SOMETHING WITH workbook HERE */
         var first_sheet_name = workbook.SheetNames[0];
@@ -124,6 +127,11 @@
         raw: true
         });
         admJson.innerHTML = JSON.stringify(admjson);
+        };
+        fileReader.readAsArrayBuffer(file);        
+        
+        }
+        }
    }
     </script>
 </body>
