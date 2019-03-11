@@ -30,9 +30,8 @@
       var preview = document.getElementById('preview');
       var converting = document.getElementById('converting');
       var data = '';
-      var fileTypes = ['xlsx'];
 
-
+       var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
      function returnFileSize(number) {
       if(number < 1024) {
       return number + 'bytes';
@@ -45,7 +44,7 @@
        function validFileType(file) {
       for(var i = 0; i < fileTypes.length; i++) {
       if(file.type === fileTypes[i]) {
-      return true;
+      return true
       } else {
         var para = document.createElement('p');
         para.textContent = 'file type' + file.type ;
