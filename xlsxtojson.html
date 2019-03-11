@@ -75,6 +75,10 @@
           convertBtn.disabled = false;
           var fileReader = new FileReader();
           fileReader.onload = function (e) {
+           var para = document.createElement('p');
+          para.textContent = 'file read as arraybuffer: ' + e.target.result;
+          preview.appendChild(para);
+           
            /* convert data to binary string */
            var data = new Uint8Array(e.target.result);
            var arr = new Array();
@@ -108,7 +112,7 @@
 
 
     
-    input.addEventListener('change', updateFile);
+    input.addEventListener('change', updateFile, false);
         
     function convert() {
         converting.style.display = 'block';        
