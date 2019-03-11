@@ -29,10 +29,10 @@
       var convertBtn = document.getElementById('convert-btn');
       var preview = document.getElementById('preview');
       var converting = document.getElementById('converting');
-      var data = '';
-
-       var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-     function returnFileSize(number) {
+      var workbook = '';
+      var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+      
+      function returnFileSize(number) {
       if(number < 1024) {
       return number + 'bytes';
       } else if(number >= 1024 && number < 1048576) {
@@ -41,13 +41,13 @@
       return (number/1048576).toFixed(1) + 'MB';
       }
       }
-       function validFileType(file) {
+      function validFileType(file) {
       for(var i = 0; i < fileTypes.length; i++) {
       if(file.type === fileTypes[i]) {
-      return true
+      return true;
       } else {
         var para = document.createElement('p');
-        para.textContent = 'file type' + file.type ;
+        para.textContent = 'file type: ' + file.type ;
         preview.appendChild(para);
       
       }
@@ -55,62 +55,63 @@
       
       return false;
       }
-      function updateFile() {     
+      function updateFile(event) {     
         while(preview.firstChild) {
         preview.removeChild(preview.firstChild);
         }
-        var curFiles = input.files;
-        if(curFiles.length === 0) {
+        var files = event.target.files,file;
+        if (!files || files.length == 0)  {
           var para = document.createElement('p');
           para.textContent = 'No files currently selected';
           preview.appendChild(para);
           convertBtn.disabled = true;
           converting.style.display = "none";
       } else {
-       
-       var list = document.createElement('ol');
-       preview.appendChild(list);
-      for(var i = 0; i < curFiles.length; i++) {
-        var listItem = document.createElement('li');
-        var para = document.createElement('p');
-        if(validFileType(curFiles[i])) {
+         file = files[0];       
+         var list = document.createElement('ol');
+         preview.appendChild(list);
+         var listItem = document.createElement('li');
+         var para = document.createElement('p');
+        if(validFileType(file)) {
           convertBtn.disabled = false;
-          data = FileReader.readAsArrayBuffer(curFiles[i]);
-          para.textContent = 'File name ' + curFiles[i].name + ', file size ' + returnFileSize(curFiles[i].size) + '.';
+          var fileReader = new FileReader();
+          fileReader.onload = function (e) {
+            var filename = file.name;
+            // pre-process data
+            var binary = "";
+            var bytes = new Uint8Array(e.target.result);
+            var length = bytes.byteLength;
+            for (var i = 0; i < length; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            // call 'xlsx' to read the file
+            workbook = XLSX.read(binary, {type: 'binary'});
+          };
+          fileReader.readAsArrayBuffer(file);
+          para.textContent = 'File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.';
           var fileA = document.createElement('a');
           var linkText = document.createTextNode("file link");  
           fileA.appendChild(linkText);                
-          fileA.href = window.URL.createObjectURL(curFiles[i]);
-          
+          fileA.href = window.URL.createObjectURL(file);         
           listItem.appendChild(fileA);
           listItem.appendChild(para);
       
         } else {
-          para.textContent = 'File name ' + curFiles[i].name + ': Not a valid file type. Update your selection.';
+          converting.style.display = "none";
+          para.textContent = 'File name ' + file.name + ': Not a valid file type. Update your selection.';
           listItem.appendChild(para);
         }
       
-        list.appendChild(listItem);
-      }
+        list.appendChild(listItem);    
       }
       }
 
 
     
-    input.addEventListener('change', updateFile);
+    input.addEventListener('change', updateFile(event));
         
     function convert() {
-        converting.style.display = 'block';
-        /* convert data to binary string */
-        var data1 = new Uint8Array(data);
-        var arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");       
-        /* Call XLSX */
-        var workbook = XLSX.read(bstr, {
-        type: "binary"
-        });
-        
+        converting.style.display = 'block';        
         /* DO SOMETHING WITH workbook HERE */
         var first_sheet_name = workbook.SheetNames[0];
         /* Get worksheet */
@@ -124,3 +125,4 @@
 </body>
 
 </html>
+
