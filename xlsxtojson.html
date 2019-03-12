@@ -82,19 +82,12 @@ convertBtn.click(function () {
       admJson.text('');   
       convertingContainer.show();
       preview.html('');
-      $.ajaxSetup({
-        beforeSend:function(jqXHR,settings){
-          if (settings.dataType === 'binary'){
-            settings.xhr().responseType='arraybuffer';
-            settings.processData=false;
-          }
-        }
-      })
-      
-      //use ajax now
       $.ajax({
-        url: xlsxUrl,
-        dataType:"binary"
+         url: xlsxUrl,
+        type: "GET",
+        dataType: 'binary',
+        responseType:'arraybuffer',
+        processData: false
       }).done(function(data) {
       // If successful
         
