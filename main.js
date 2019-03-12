@@ -1,4 +1,4 @@
-<script>
+
  
 alert('hi');
   var input = $('#url');
@@ -93,4 +93,4 @@ convertBtn.click(function () {
    }
   });
 
-</script>
+
