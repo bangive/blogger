@@ -65,17 +65,14 @@
       }
         
   convertBtn.click(function () {
-      var url = input.val();
-      preview.append('<p>url0:' + url + '</p>');    
+      var url = input.val();     
       
       if (url.length == 0)  {    
-        preview.append('<p>url1:' + url + '</p>');    
+
         convertBtn.disabled = true;
-        converting.style.display = "none";
-      } else {    
-          preview.append('<p>url2:' + url + '</p>');    
-             
-          converting.style.display = "block";
+        converting.hide();
+      } else {                 
+          converting.show();
           var oReq = new XMLHttpRequest();
           oReq.open("GET", url, true);
           oReq.responseType = "arraybuffer";
