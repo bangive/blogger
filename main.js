@@ -1,6 +1,6 @@
 <script type='text/javascript'>
-  $( document ).ready(function(){
-  
+ 
+
   var input = $('#url');
   var xlsxUrl = '';
   var admJson = $('#admjson');
@@ -92,5 +92,5 @@ convertBtn.click(function () {
       });                   
    }
   });
- });
+
 </script>
