@@ -87,17 +87,18 @@
   });
   convertBtnLocal.click(function(){
     if (converting) return;
+    var file = fileInput.files[0];
+    if(!validFileType(file)) return;
     convertBtnLocal.prop('disabled', true);       
     converting = true;
     admJson.text('');
     convertingContainer.show();
     preview.html('');
-    var file = fileInput.files[0];
-    if(!validFileType(file)) return;
     var fileReader = new FileReader();
     fileReader.onload = function (e) {
+      preview.html('<p>load state: ' + fileReader.readyState);
       /* convert data to binary string */
-      var data = new Uint8Array(e.target.result);
+      var data = new Uint8Array(fileReader.result);
       var arr = new Array();
       for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
       var bstr = arr.join("");
@@ -117,6 +118,9 @@
       converting = false;
       convertingContainer.hide();
       convertBtnLocal.prop('disabled', false);
+    };
+    fileReader.onerror = function (e) {
+      preview.html('<p>Error: ' + fileReader.error);
     };
     fileReader.readAsArrayBuffer(file);
   });
