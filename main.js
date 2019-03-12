@@ -1,6 +1,6 @@
-<script type='text/javascript'>
+<script>
  
-
+alert('hi');
   var input = $('#url');
   var xlsxUrl = '';
   var admJson = $('#admjson');
