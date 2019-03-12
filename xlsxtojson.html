@@ -26,20 +26,19 @@
      <br/>
      <button id="convert-btn">Convert now</button>
    </div>
-   <div style="margin: 0 auto; text-align: center;" id="admjson">
-     <h3 id="converting" style="display: none;">Converting, please wait</h3>
-
-   </div>
    <div id="preview"></div>
+   <h3 id="converting" style="display: none;">Converting, please wait</h3>
+   <div style="margin: 0 auto; text-align: center;" id="admjson">
+   </div>
    </div>
     <script>
       var input = $('#url');
       var admJson = $('#admjson');
       var convertBtn = $('#convert-btn');
       var preview = $('#preview');
-      var converting = $('#converting');
+      var convertingContainer = $('#converting');
       var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-      
+      var converting = false;
       function returnFileSize(number) {
       if(number < 1024) {
       return number + 'bytes';
@@ -65,15 +64,18 @@
        return false;
       }
         
-  convertBtn.click(function () {
+    convertBtn.click(function () {
+      if (converting) return;
       var url = input.val();     
-      
+      convertingContainer.hide();
+      admJson.text('');
       if (url.length == 0)  {    
 
         convertBtn.disabled = true;
         converting.hide();
-      } else {                 
-          converting.show();
+      } else {        
+          converting = true;         
+          convertingContainer.show();
           var oReq = new XMLHttpRequest();
           oReq.open("GET", url, true);
           oReq.responseType = "arraybuffer";
@@ -96,8 +98,11 @@
           var first_sheet_name = workbook.SheetNames[0];
           /* Get worksheet */
           var worksheet = workbook.Sheets[first_sheet_name];
-          jsonStr = JSON.stringify(XLSX.utils.sheet_to_json(worksheet, {raw: true}));
+          jsonVar = XLSX.utils.sheet_to_json(worksheet, {raw: true});
+          jsonStr = JSON.stringify(jsonVar);
           admJson.text(jsonStr);
+          converting = false;
+          convertingContainer.hide();
           }
           
           oReq.send();
