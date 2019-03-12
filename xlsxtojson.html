@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html>
 
 <head>
@@ -7,15 +7,19 @@
     <meta content='Convert Excel to JSON' name='description'/>
     <meta content='width=device-width, initial-scale=1' name='viewport'/>
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
-    <script src="https://bangive.github.io/blogger/xlsx.full.min.js"></script>
+    
+    <body>
     <style type="text/css">
       /*! normalize.css v3.0.1 | MIT License | git.io/normalize */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}
-  
-  
+      
     body { width: 100%; height: 100%; font-size: 18px }
     .center { margin: 0 auto; text-align: center}
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://bangive.github.io/blogger/xlsx.full.min.js"></script>
+    <script src="https://bangive.github.io/blogger/jquery.binarytransport.js" ></script>
+    <script src="https://bangive.github.io/blogger/main.js" ></script>
+    
 </head>
 
 <body>
@@ -32,99 +36,6 @@
    <div class="center" id="admjson">
    </div>
    </div>
-    <script>
-      var input = $('#url');
-      var xlsxUrl = '';
-      var admJson = $('#admjson');
-      var convertBtn = $('#convert-btn');
-      var preview = $('#preview');
-      var convertingContainer = $('#converting');
-      var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-      var converting = false;
-      function returnFileSize(number) {
-      if(number < 1024) {
-      return number + 'bytes';
-      } else if(number >= 1024 && number < 1048576) {
-      return (number/1024).toFixed(1) + 'KB';
-      } else if(number >= 1048576) {
-      return (number/1048576).toFixed(1) + 'MB';
-      }
-      }
-      function validFileType(file) {
-        for(var i = 0; i < fileTypes.length; i++) {
-          if(file.type === fileTypes[i]) {
-            convertBtn.disabled = false;
-            var p = '<p>File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.</p>';
-            preview.append(p);
-            return true;
-          } else {
-            converting.style.display = "none";
-            var p = 'File name ' + file.name + ': Not a valid file type. Update your selection.';
-            preview.append(p);      
-          }
-       }     
-       return false;
-      }
-        
-    convertBtn.click(function () {
-      if (converting) return;
-      xlsxUrl = input.val();
-      if (xlsxUrl.length == 0)  {    
-        alert('Please enter xlsx url');
-      } else {        
-         preview.html('');
-         convertBtn.prop('disabled', true);        
-          converting = true;
-          admJson.text('');   
-          convertingContainer.show();
-          $.ajaxSetup({
-            beforeSend:function(jqXHR,settings){
-              if (settings.dataType === 'binary'){
-                settings.xhr().responseType='arraybuffer';
-                settings.processData=false;
-              }
-            }
-          })
-          
-          //use ajax now
-          $.ajax({
-            url:xlsxUrl,
-            dataType:"binary"
-          }).done(function(data) {
-          // If successful
-            
-            /* convert data to binary string */
-            var data = new Uint8Array(data);
-            var arr = new Array();
-            for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-            var bstr = arr.join("");
-            
-            /* Call XLSX */
-            var workbook = XLSX.read(bstr, {
-            type: "binary"
-            });
-            
-            /* DO SOMETHING WITH workbook HERE */
-            var first_sheet_name = workbook.SheetNames[0];
-            /* Get worksheet */
-            var worksheet = workbook.Sheets[first_sheet_name];
-            jsonVar = XLSX.utils.sheet_to_json(worksheet, {raw: true});
-            jsonStr = JSON.stringify(jsonVar);
-            admJson.text(jsonStr);
-            converting = false;
-            convertingContainer.hide();
-            convertBtn.prop('disabled', false);
-          }).fail(function(jqXHR, textStatus, errorThrown) {
-          // If fail
-            converting = false;
-            convertingContainer.hide();
-            convertBtn.prop('disabled', false);           
-            console.log(textStatus + ': ' + errorThrown);
-            preview.html('<p>Error, cannot load xlsx file: ' + xlsxUrl + 'error detail: ' + textStatus + ': ' + errorThrown + '</p>');
-          });                   
-       }
-    });
-  </script>
 </body>
 
 </html>
