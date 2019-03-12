@@ -65,12 +65,16 @@
       }
         
   convertBtn.click(function () {
-      alert('url click');
       var url = input.val();
-      if (url.length == 0)  {        
+      preview.append('<p>url0:' + url + '</p>');    
+      
+      if (url.length == 0)  {    
+        preview.append('<p>url1:' + url + '</p>');    
         convertBtn.disabled = true;
         converting.style.display = "none";
-        } else {       
+      } else {    
+          preview.append('<p>url2:' + url + '</p>');    
+             
           converting.style.display = "block";
           var oReq = new XMLHttpRequest();
           oReq.open("GET", url, true);
