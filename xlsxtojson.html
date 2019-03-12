@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html>
 
 <head>
@@ -11,12 +11,14 @@
     body { width: 100%; height: 100%; font-size: 18px }
     input, button { padding: 5px 10px; font-size: 30px; }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
    <h1 style="font-size:80px; margin: 0 auto; padding: 50px 10px">Convert excel xlsx to json</h1>
 
-     <input type="file" id="xlsx_uploads" name="xlsx_uploads" accept=".xlsx" >
+     <p>Name: <input type="text" id="url"></p>
+     <br/>
      <button id="convert-btn" style="font-size: 30px; " disabled onclick="convert()">Convert now</button>
  
    <div style="margin: 0 auto; text-align: center; ' id='admjson">
@@ -24,11 +26,11 @@
    </div>
    <div id="preview"></div>
     <script>
-      var input = document.querySelector('input');
-      var admJson = document.getElementById('admjson');
-      var convertBtn = document.getElementById('convert-btn');
-      var preview = document.getElementById('preview');
-      var converting = document.getElementById('converting');
+      var input = $('#url');
+      var admJson = $('#admjson');
+      var convertBtn = $('#convert-btn');
+      var preview = $('#preview');
+      var converting = $('#converting');
       var fileTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
       
       function returnFileSize(number) {
@@ -41,96 +43,56 @@
       }
       }
       function validFileType(file) {
-      for(var i = 0; i < fileTypes.length; i++) {
-      if(file.type === fileTypes[i]) {
-      return true;
-      } else {
-        var para = document.createElement('p');
-        para.textContent = 'file type: ' + file.type ;
-        preview.appendChild(para);
-      
+        for(var i = 0; i < fileTypes.length; i++) {
+          if(file.type === fileTypes[i]) {
+            convertBtn.disabled = false;
+            var p = '<p>File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.</p>';
+            preview.append(p);
+            return true;
+          } else {
+            converting.style.display = "none";
+            var p = 'File name ' + file.name + ': Not a valid file type. Update your selection.';
+            preview.append(p);      
+          }
+       }     
+       return false;
       }
-      }
-      
-      return false;
-      }
-      function updateFile() {     
-        while(preview.firstChild) {
-        preview.removeChild(preview.firstChild);
-        }
-        var file = input.files[0];
-        if (file.length == 0)  {
-          var para = document.createElement('p');
-          para.textContent = 'No files currently selected';
-          preview.appendChild(para);
-          convertBtn.disabled = true;
-          converting.style.display = "none";
-      } else {
-         var list = document.createElement('ol');
-         preview.appendChild(list);
-         var listItem = document.createElement('li');
-         var para = document.createElement('p');
-        if(validFileType(file)) {
-          convertBtn.disabled = false;
-          para.textContent = 'File name ' + file.name + ', file size ' + returnFileSize(file.size) + '.';
-          var fileA = document.createElement('a');
-          var linkText = document.createTextNode("file link");  
-          fileA.appendChild(linkText);                
-          fileA.href = window.URL.createObjectURL(file);         
-          listItem.appendChild(fileA);
-          listItem.appendChild(para);
-      
-        } else {
-          converting.style.display = "none";
-          para.textContent = 'File name ' + file.name + ': Not a valid file type. Update your selection.';
-          listItem.appendChild(para);
-        }
-      
-        list.appendChild(listItem);    
-      }
-      }
-
-
-    
+  
     input.addEventListener('change', updateFile, false);
         
     function convert() {
-        var file = input.files[0];
-        if (file.length == 0)  {        
+      var url = input.val();
+      if (url.length == 0)  {        
         convertBtn.disabled = true;
         converting.style.display = "none";
-        } else {
-       
-        if(validFileType(file)) {
-        convertBtn.disabled = false;
-        var fileReader = new FileReader();
-        fileReader.onload = function (e) {
-        var para = document.createElement('p');
-        para.textContent = 'file read as arraybuffer: ' + e.target.result;
-        preview.appendChild(para);
-        /* convert data to binary string */
-        var data = new Uint8Array(e.target.result);
-        var arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");
-        
-        /* Call XLSX */
-        var workbook = XLSX.read(bstr, {
-        type: "binary"
-        });
-        converting.style.display = 'block';        
-        /* DO SOMETHING WITH workbook HERE */
-        var first_sheet_name = workbook.SheetNames[0];
-        /* Get worksheet */
-        var worksheet = workbook.Sheets[first_sheet_name];
-        var admjson = XLSX.utils.sheet_to_json(worksheet, {
-        raw: true
-        });
-        admJson.innerHTML = JSON.stringify(admjson);
-        };
-        fileReader.readAsArrayBuffer(file);        
-        
-        }
+        } else {       
+          converting.style.display = "block";
+          var oReq = new XMLHttpRequest();
+          oReq.open("GET", url, true);
+          oReq.responseType = "arraybuffer";
+          
+          oReq.onload = function(e) {
+          var arraybuffer = oReq.response;
+          
+          /* convert data to binary string */
+          var data = new Uint8Array(arraybuffer);
+          var arr = new Array();
+          for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+          var bstr = arr.join("");
+          
+          /* Call XLSX */
+          var workbook = XLSX.read(bstr, {
+          type: "binary"
+          });
+          
+          /* DO SOMETHING WITH workbook HERE */
+          var first_sheet_name = workbook.SheetNames[0];
+          /* Get worksheet */
+          var worksheet = workbook.Sheets[first_sheet_name];
+          admJson.text(XLSX.utils.sheet_to_json(worksheet, {raw: true}));
+          }
+          
+          oReq.send();
         }
    }
     </script>
