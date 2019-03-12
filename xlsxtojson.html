@@ -13,7 +13,7 @@
   
   
     body { width: 100%; height: 100%; font-size: 18px }
-    .center { margin: 0 auto; text-aalign: center}
+    .center { margin: 0 auto; text-align: center}
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
@@ -120,7 +120,7 @@
             convertingContainer.hide();
             convertBtn.prop('disabled', false);           
             console.log(textStatus + ': ' + errorThrown);
-            preview.html('<p>Error, cannot load xlsx file: ' + xlsxUrl + '</p>');
+            preview.html('<p>Error, cannot load xlsx file: ' + xlsxUrl + 'error detail: ' + textStatus + ': ' + errorThrown + '</p>');
           });                   
        }
     });
