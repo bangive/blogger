@@ -87,12 +87,13 @@
   });
   convertBtnLocal.click(function(){
     if (converting) return;
-    convertBtn.prop('disabled', true);        
+    convertBtnLocal.prop('disabled', true);       
     converting = true;
-    admJson.text('');   
+    admJson.text('');
     convertingContainer.show();
     preview.html('');
     var file = fileInput.files[0];
+    if(!validFileType(file)) return;
     var fileReader = new FileReader();
     fileReader.onload = function (e) {
       /* convert data to binary string */
