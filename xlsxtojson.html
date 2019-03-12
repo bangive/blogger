@@ -27,7 +27,8 @@
      <button id="convert-btn">Convert now</button>
    </div>
    <div style="margin: 0 auto; text-align: center;" id="admjson">
-   <h4 id="converting" style="display: none; font-size:80px; margin-top: 100px">Converting, please wait</h4>
+     <h3 id="converting" style="display: none;">Converting, please wait</h3>
+
    </div>
    <div id="preview"></div>
    </div>
@@ -95,7 +96,8 @@
           var first_sheet_name = workbook.SheetNames[0];
           /* Get worksheet */
           var worksheet = workbook.Sheets[first_sheet_name];
-          admJson.text(XLSX.utils.sheet_to_json(worksheet, {raw: true}));
+          jsonStr = JSON.stringify(XLSX.utils.sheet_to_json(worksheet, {raw: true}));
+          admJson.text(jsonStr);
           }
           
           oReq.send();
