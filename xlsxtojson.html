@@ -86,9 +86,12 @@
     }
   });
   convertBtnLocal.click(function(){
+    preview.append('localbtnclicked');
     if (converting) return;
     var file = fileInput.files[0];
+    preview.append('file: ' + file);
     if(!validFileType(file)) return;
+    preview.append('file.type: ' + file.type);
     convertBtnLocal.prop('disabled', true);       
     converting = true;
     admJson.text('');
