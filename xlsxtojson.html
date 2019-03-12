@@ -69,7 +69,8 @@
       if (url.length == 0)  {    
         alert('Please enter xlsx url');
       } else {        
-          convertBtn.prop('disabled', true);        
+         preview.html('');
+         convertBtn.prop('disabled', true);        
           converting = true;
           admJson.text('');   
           convertingContainer.show();
@@ -116,7 +117,7 @@
             convertingContainer.hide();
             convertBtn.prop('disabled', false);           
             console.log(textStatus + ': ' + errorThrown);
-            preview.append('<p>Error, cannot load xlsx file</p>');
+            preview.html('<p>Error, cannot load xlsx file</p>');
           });                   
        }
     });
